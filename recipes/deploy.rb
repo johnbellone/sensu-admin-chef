@@ -4,7 +4,8 @@
 #
 # Copyright 2012, Sonian Inc.
 # Copyright 2012, Needle Inc.
-#
+# Copyright 2014, Bloomberg Finance L.P.
+# 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -61,7 +62,13 @@ deploy_revision "sensu-admin" do
   migration_command "bundle exec rake db:migrate --trace >/tmp/migration.log 2>&1 && bundle exec rake assets:precompile && bundle exec rake db:seed"
 end
 
-service "sensu-admin" do
-  supports :status => true, :restart => true, :reload => true
+service 'sensu-admin' do
+  case node['platform_family']
+  when 'rhel', 'fedora'
+    supports :restart => true, :reload => true
+  else
+    supports :status => true, :restart => true, :reload => true
+  end
+
   action [ :enable, :start ]
 end

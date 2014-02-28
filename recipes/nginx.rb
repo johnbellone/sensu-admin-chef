@@ -39,12 +39,19 @@ template "#{node.sensu.admin.base_path}/sensu-admin-nginx.conf" do
   notifies :restart, "service[nginx]", :delayed
 end
 
-link "/etc/nginx/sites-available/sensu-admin.conf" do
-  to "#{node.sensu.admin.base_path}/sensu-admin-nginx.conf"
-end
+case node['platform_family']
+when 'debian'
+  link "/etc/nginx/sites-available/sensu-admin.conf" do
+    to "#{node.sensu.admin.base_path}/sensu-admin-nginx.conf"
+  end
 
-link "/etc/nginx/sites-enabled/sensu-admin.conf" do
-  to "/etc/nginx/sites-available/sensu-admin.conf"
+  link "/etc/nginx/sites-enabled/sensu-admin.conf" do
+    to "/etc/nginx/sites-available/sensu-admin.conf"
+  end
+when 'rhel', 'fedora'
+  link '/etc/nginx/conf.d/sensu-admin.conf' do
+    to "#{node.sensu.admin.base_path}/sensu-admin-nginx.conf"
+  end
 end
 
 ssl = data_bag_item("sensu", "ssl")

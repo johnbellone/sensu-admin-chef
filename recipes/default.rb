@@ -4,6 +4,7 @@
 #
 # Copyright 2012, Sonian Inc.
 # Copyright 2012, Needle Inc.
+# Copyright 2014, Bloomberg Finance L.P.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,18 +31,23 @@ when "debian"
   else
     package "git"
   end
+
+  package "sqlite3"
+  package "libsqlite3-dev"
 when "rhel","fedora"
   case node['platform_version'].to_i
   when 5
     include_recipe "yum::epel"
   end
   package "git"
+  package "sqlite"
+  package "sqlite-devel"
 else
   package "git"
+  package "sqlite3"
+  package "libsqlite3-dev"
 end
 
-package "sqlite3"
-package "libsqlite3-dev"
 
 # bundle install fails unless the mysql c libraries are available
 include_recipe "mysql::ruby"
